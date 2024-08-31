@@ -4,4 +4,7 @@ target
 .classpath
 .settings
 .project
+certs/
+!certs/generate-certs.sh
+
 
