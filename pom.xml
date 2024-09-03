@@ -131,6 +131,7 @@
                     <configuration>
                         <skip>true</skip>
                         <executable>java</executable>
+                        <mainClass>com.jasonsjones.server.ApiServer</mainClass>
                     </configuration>
                 </plugin>
             </plugins>
