@@ -1,6 +1,12 @@
 package com.jasonsjones.server;
 
+import java.io.File;
+import java.nio.file.Path;
+
+import org.eclipse.jetty.ee10.servlet.DefaultServlet;
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.server.*;
+import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +44,16 @@ public class ApiServer {
         httpsConnector.setName("secure");
         httpsConnector.setPort(httpsConfiguration.getSecurePort());
 
+        LOGGER.info("Creating servlet context handler");
+        ServletContextHandler servletContextHandler = new ServletContextHandler();
+        servletContextHandler.setContextPath("/");
+        Path webRootPath = new File("tutorialapi-server/src/main/resources/web").toPath().toRealPath();
+        Resource baseResource = servletContextHandler.newResource(webRootPath.toUri());
+        servletContextHandler.setBaseResource(baseResource);
+        servletContextHandler.addServlet(DefaultServlet.class, "/");
+
         server.addConnector(httpsConnector);
+        server.setHandler(servletContextHandler);
 
         LOGGER.info("Starting app server...");
         server.start();
