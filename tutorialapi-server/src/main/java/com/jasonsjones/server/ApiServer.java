@@ -29,6 +29,7 @@ public class ApiServer {
         httpsConfiguration.setSecurePort(8443);
         httpsConfiguration.addCustomizer(new SecureRequestCustomizer());
         httpsConfiguration.setSendServerVersion(false);
+        httpsConfiguration.setSendDateHeader(false);
 
         LOGGER.info("Setting up SSL (server) context factory");
         SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
