@@ -3,11 +3,14 @@ package com.jasonsjones.server;
 import java.io.File;
 import java.nio.file.Path;
 
+import com.jasonsjones.rest.RestApi;
 import org.eclipse.jetty.ee10.servlet.DefaultServlet;
 import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
+import org.eclipse.jetty.ee10.servlet.ServletHolder;
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.glassfish.jersey.servlet.ServletContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,6 +59,9 @@ public class ApiServer {
         Resource baseResource = servletContextHandler.newResource(webRootPath.toUri());
         servletContextHandler.setBaseResource(baseResource);
         servletContextHandler.addServlet(DefaultServlet.class, "/");
+
+        ServletHolder apiServletHolder = servletContextHandler.addServlet(ServletContainer.class, "/api/*");
+        apiServletHolder.setInitParameter("jakarta.ws.rs.Application", RestApi.class.getName());
 
         server.addConnector(httpsConnector);
         server.setHandler(servletContextHandler);
