@@ -2,6 +2,7 @@ package com.jasonsjones.server;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Optional;
 
 import com.jasonsjones.rest.RestApi;
 import org.eclipse.jetty.ee10.servlet.DefaultServlet;
@@ -25,11 +26,12 @@ public class ApiServer {
     private static final String WEB_ROOT_PATH = "tutorialapi-server/src/main/resources/web";
 
     public static void main(String... args) throws Exception {
+        int port = Optional.ofNullable(System.getProperty("port")).map(Integer::parseInt).orElse(8443);
 
         LOGGER.info("Setting up https configuration");
         HttpConfiguration httpsConfiguration = new HttpConfiguration();
         httpsConfiguration.setSecureScheme(HTTPS.asString());
-        httpsConfiguration.setSecurePort(8443);
+        httpsConfiguration.setSecurePort(port);
         httpsConfiguration.addCustomizer(new SecureRequestCustomizer());
         httpsConfiguration.setSendServerVersion(false);
         httpsConfiguration.setSendDateHeader(false);
@@ -66,7 +68,7 @@ public class ApiServer {
         server.addConnector(httpsConnector);
         server.setHandler(servletContextHandler);
 
-        LOGGER.info("Starting app server...");
+        LOGGER.info("Starting app server on port {}", port);
         server.start();
         server.join();
     }
