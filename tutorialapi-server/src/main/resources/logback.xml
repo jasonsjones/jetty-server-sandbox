@@ -10,4 +10,5 @@
     </root>
 
     <logger name="com.jasonsjones" level="INFO"/>
+    <logger name="org.eclipse.jetty" level="WARN"/>
 </configuration>

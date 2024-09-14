@@ -5,6 +5,8 @@ import java.nio.file.Path;
 import java.util.Optional;
 
 import com.jasonsjones.rest.RestApi;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import org.eclipse.jetty.ee10.servlet.DefaultServlet;
 import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.ee10.servlet.ServletHolder;
@@ -20,13 +22,17 @@ import static org.eclipse.jetty.http.HttpVersion.HTTP_1_1;
 
 public class ApiServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApiServer.class);
-    private static final String KEYSTORE_PATH = "tutorialapi-server/src/main/resources/certs/site.p12";
     private static final String KEYSTORE_TYPE = "PKCS12";
     private static final String KEYSTORE_PASSWORD = "changeit";
     private static final String WEB_ROOT_PATH = "tutorialapi-server/src/main/resources/web";
 
     public static void main(String... args) throws Exception {
         int port = Optional.ofNullable(System.getProperty("port")).map(Integer::parseInt).orElse(8443);
+        String mode = Optional.ofNullable(System.getProperty("mode")).orElse("dev");
+        LOGGER.info("Server mode: {}", mode);
+
+        Config config = ConfigFactory.parseFile(new File(String.format("system-%s.properties", mode)));
+        String keystorePath = config.getString("server.keystore.file");
 
         LOGGER.info("Setting up https configuration");
         HttpConfiguration httpsConfiguration = new HttpConfiguration();
@@ -38,7 +44,7 @@ public class ApiServer {
 
         LOGGER.info("Setting up SSL (server) context factory");
         SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
-        sslContextFactory.setKeyStorePath(KEYSTORE_PATH);
+        sslContextFactory.setKeyStorePath(keystorePath);
         sslContextFactory.setKeyStoreType(KEYSTORE_TYPE);
         sslContextFactory.setKeyStorePassword(KEYSTORE_PASSWORD);
         sslContextFactory.setKeyManagerPassword(KEYSTORE_PASSWORD);
