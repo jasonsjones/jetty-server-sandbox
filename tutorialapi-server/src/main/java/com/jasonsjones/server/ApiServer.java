@@ -5,6 +5,8 @@ import java.nio.file.Path;
 import java.util.Optional;
 
 import com.jasonsjones.rest.RestApi;
+import com.jasonsjones.server.config.ConfigKey;
+import com.jasonsjones.server.config.SystemKey;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import org.eclipse.jetty.ee10.servlet.DefaultServlet;
@@ -22,17 +24,22 @@ import static org.eclipse.jetty.http.HttpVersion.HTTP_1_1;
 
 public class ApiServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApiServer.class);
-    private static final String KEYSTORE_TYPE = "PKCS12";
-    private static final String KEYSTORE_PASSWORD = "changeit";
-    private static final String WEB_ROOT_PATH = "tutorialapi-server/src/main/resources/web";
+
+    private static final String PROPERTY_FILE = "system-%s.properties";
+    private static final String ROOT_CONTEXT = "/";
+    private static final String API_PATTERN = "/api/*";
+    private static final String APPLICATION_INIT_PARAM_KEY = "jakarta.ws.rs.Application";
 
     public static void main(String... args) throws Exception {
-        int port = Optional.ofNullable(System.getProperty("port")).map(Integer::parseInt).orElse(8443);
-        String mode = Optional.ofNullable(System.getProperty("mode")).orElse("dev");
-        LOGGER.info("Server mode: {}", mode);
+        int port = Integer.parseInt(
+                Optional
+                        .ofNullable(System.getProperty(SystemKey.PORT.getKey()))
+                        .orElse(SystemKey.PORT.getDefaultValue()));
+        String mode = Optional
+                .ofNullable(System.getProperty(SystemKey.MODE.getKey()))
+                .orElse(SystemKey.MODE.getDefaultValue());
 
-        Config config = ConfigFactory.parseFile(new File(String.format("system-%s.properties", mode)));
-        String keystorePath = config.getString("server.keystore.file");
+        Config config = ConfigFactory.parseFile(new File(String.format(PROPERTY_FILE, mode)));
 
         LOGGER.info("Setting up https configuration");
         HttpConfiguration httpsConfiguration = new HttpConfiguration();
@@ -44,10 +51,10 @@ public class ApiServer {
 
         LOGGER.info("Setting up SSL (server) context factory");
         SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
-        sslContextFactory.setKeyStorePath(keystorePath);
-        sslContextFactory.setKeyStoreType(KEYSTORE_TYPE);
-        sslContextFactory.setKeyStorePassword(KEYSTORE_PASSWORD);
-        sslContextFactory.setKeyManagerPassword(KEYSTORE_PASSWORD);
+        sslContextFactory.setKeyStorePath(config.getString(ConfigKey.SERVER_KEYSTORE_FILE.getKey()));
+        sslContextFactory.setKeyStoreType(config.getString(ConfigKey.SERVER_KEYSTORE_TYPE.getKey()));
+        sslContextFactory.setKeyStorePassword(config.getString(ConfigKey.SERVER_KEYSTORE_PASSWORD.getKey()));
+        sslContextFactory.setKeyManagerPassword(config.getString(ConfigKey.SERVER_KEYSTORE_PASSWORD.getKey()));
         sslContextFactory.setTrustAll(true);
 
         LOGGER.info("Creating SSL and HTTP connection factories");
@@ -57,19 +64,19 @@ public class ApiServer {
 
         LOGGER.info("Creating HTTPS connector");
         ServerConnector httpsConnector = new ServerConnector(server, sslConnectionFactory, httpsConnectionFactory);
-        httpsConnector.setName("secure");
         httpsConnector.setPort(httpsConfiguration.getSecurePort());
 
         LOGGER.info("Creating servlet context handler");
         ServletContextHandler servletContextHandler = new ServletContextHandler();
-        servletContextHandler.setContextPath("/");
-        Path webRootPath = new File(WEB_ROOT_PATH).toPath().toRealPath();
+        servletContextHandler.setContextPath(ROOT_CONTEXT);
+        LOGGER.info("Web root: {}", config.getString(ConfigKey.SERVER_WEB_ROOT.getKey()));
+        Path webRootPath = new File(config.getString(ConfigKey.SERVER_WEB_ROOT.getKey())).toPath().toRealPath();
         Resource baseResource = servletContextHandler.newResource(webRootPath.toUri());
         servletContextHandler.setBaseResource(baseResource);
-        servletContextHandler.addServlet(DefaultServlet.class, "/");
+        servletContextHandler.addServlet(DefaultServlet.class, ROOT_CONTEXT);
 
-        ServletHolder apiServletHolder = servletContextHandler.addServlet(ServletContainer.class, "/api/*");
-        apiServletHolder.setInitParameter("jakarta.ws.rs.Application", RestApi.class.getName());
+        ServletHolder apiServletHolder = servletContextHandler.addServlet(ServletContainer.class, API_PATTERN);
+        apiServletHolder.setInitParameter(APPLICATION_INIT_PARAM_KEY, RestApi.class.getName());
 
         server.addConnector(httpsConnector);
         server.setHandler(servletContextHandler);
