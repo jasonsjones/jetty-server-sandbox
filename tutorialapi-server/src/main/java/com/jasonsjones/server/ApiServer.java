@@ -12,6 +12,7 @@ import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.glassfish.jersey.servlet.ServletContainer;
+import org.glassfish.jersey.servlet.ServletProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +29,6 @@ public class ApiServer {
     private static final String PROPERTY_FILE = "system-%s.properties";
     private static final String ROOT_CONTEXT = "/";
     private static final String API_PATTERN = "/api/*";
-    private static final String APPLICATION_INIT_PARAM_KEY = "jakarta.ws.rs.Application";
 
     private static HttpConfiguration createHttpsConfiguration(int port) {
         HttpConfiguration httpsConfiguration = new HttpConfiguration();
@@ -81,7 +81,7 @@ public class ApiServer {
         ServletContextHandler servletContextHandler = createServletContextHandler(config);
 
         ServletHolder apiServletHolder = servletContextHandler.addServlet(ServletContainer.class, API_PATTERN);
-        apiServletHolder.setInitParameter(APPLICATION_INIT_PARAM_KEY, RestApi.class.getName());
+        apiServletHolder.setInitParameter(ServletProperties.JAXRS_APPLICATION_CLASS, RestApi.class.getName());
 
         server.addConnector(httpsConnector);
         server.setHandler(servletContextHandler);
