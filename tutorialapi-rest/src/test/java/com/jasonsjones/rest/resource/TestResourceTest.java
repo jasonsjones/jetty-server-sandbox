@@ -22,7 +22,9 @@ public class TestResourceTest extends JerseyTest {
 
     @Test
     public void test() {
-        Response res = target("/test").request().get();
+        Response res = target("/status/ping").request().get();
+
+        Assertions.assertEquals("Pong", res.readEntity(String.class));
         Assertions.assertEquals(200, res.getStatus());
     }
 }
