@@ -61,6 +61,11 @@
                 <version>3.1.1</version>
             </dependency>
             <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-runtime</artifactId>
+                <version>4.0.5</version>
+            </dependency>
+            <dependency>
                 <groupId>org.glassfish.jersey</groupId>
                 <artifactId>jersey-bom</artifactId>
                 <version>3.1.8</version>
@@ -72,14 +77,18 @@
                 <artifactId>jersey-hk2</artifactId>
                 <version>3.1.8</version>
             </dependency>
-
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-api</artifactId>
                 <version>5.11.0</version>
                 <scope>test</scope>
             </dependency>
-
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>5.11.0</version>
+                <scope>test</scope>
+            </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
@@ -128,6 +137,12 @@
                             </ignoredUnusedDeclaredDependency>
                             <ignoredUnusedDeclaredDependency>
                                     org.glassfish.jersey.inject:jersey-hk2
+                            </ignoredUnusedDeclaredDependency>
+                            <ignoredUnusedDeclaredDependency>
+                                    org.glassfish.jaxb:jaxb-runtime
+                            </ignoredUnusedDeclaredDependency>
+                            <ignoredUnusedDeclaredDependency>
+                                    org.glassfish.jersey.test-framework.providers:jersey-test-framework-provider-jetty
                             </ignoredUnusedDeclaredDependency>
                         </ignoredUnusedDeclaredDependencies>
                     </configuration>
