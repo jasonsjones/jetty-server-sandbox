@@ -24,7 +24,11 @@ public class TestResourceTest extends JerseyTest {
     public void test() {
         Response res = target("/status/ping").request().get();
 
-        Assertions.assertEquals("Pong", res.readEntity(String.class));
         Assertions.assertEquals(200, res.getStatus());
+        Assertions.assertEquals("Pong", res.readEntity(String.class));
+        Assertions.assertEquals("*", res.getHeaderString("Access-Control-Allow-Origin"));
+        Assertions.assertEquals(
+                "DELTETE, HEAD, GET, OPTIONS, PATCH, POST, PUT",
+                res.getHeaderString("Access-Control-Allow-Methods"));
     }
 }
