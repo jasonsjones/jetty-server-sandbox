@@ -7,7 +7,8 @@ import jakarta.ws.rs.Produces;
 import static jakarta.ws.rs.core.MediaType.TEXT_PLAIN;
 
 @Path("/status/ping")
-public class TestResource {
+public class StatusResource {
+
     @GET
     @Produces(TEXT_PLAIN)
     public String test() {

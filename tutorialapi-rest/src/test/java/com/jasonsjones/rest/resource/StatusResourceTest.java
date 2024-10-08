@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.logging.LogManager;
 
-public class TestResourceTest extends JerseyTest {
+public class StatusResourceTest extends JerseyTest {
 
     static {
         LogManager.getLogManager().reset();
@@ -21,7 +21,7 @@ public class TestResourceTest extends JerseyTest {
     }
 
     @Test
-    public void test() {
+    public void ping() {
         Response res = target("/status/ping").request().get();
 
         Assertions.assertEquals(200, res.getStatus());
