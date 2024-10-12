@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.jasonsjones</groupId>
-    <artifactId>tutorialapi</artifactId>
+    <artifactId>sandbox</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
@@ -12,15 +12,15 @@
     </properties>
 
     <modules>
-        <module>tutorialapi-rest</module>
-        <module>tutorialapi-server</module>
+        <module>sandbox-rest</module>
+        <module>sandbox-server</module>
     </modules>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>tutorialapi-rest</artifactId>
+                <artifactId>sandbox-rest</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
