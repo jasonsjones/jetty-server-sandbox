@@ -3,18 +3,18 @@
 
     <parent>
         <groupId>com.jasonsjones</groupId>
-        <artifactId>tutorialapi</artifactId>
+        <artifactId>sandbox</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>tutorialapi-server</artifactId>
+    <artifactId>sandbox-server</artifactId>
 
     <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>tutorialapi-rest</artifactId>
+            <artifactId>sandbox-rest</artifactId>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
